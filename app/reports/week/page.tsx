@@ -27,7 +27,18 @@ export default function WeekReportPage() {
       setLoading(true);
       setError(null);
       const report = await xanoClient.getWeekReport(selectedDate);
-      setWeekReport(report);
+
+      // Transform old API response to new structure if needed
+      const transformedReport: WeekReport = {
+        ...report,
+        summary: report.summary || {
+          total_worked: (report as any).total_hours || 0,
+          total_should: (report as any).expected_hours || 0,
+          difference: (report as any).overtime_delta || 0,
+        }
+      };
+
+      setWeekReport(transformedReport);
     } catch (err: any) {
       console.error('Failed to load week report:', err);
       setError(err.message || 'Fehler beim Laden des Wochenberichts');

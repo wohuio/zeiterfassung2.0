@@ -25,7 +25,18 @@ export default function MonthReportPage() {
       setLoading(true);
       setError(null);
       const report = await xanoClient.getMonthReport(selectedYear, selectedMonth);
-      setMonthReport(report);
+
+      // Transform old API response to new structure if needed
+      const transformedReport: MonthReport = {
+        ...report,
+        summary: report.summary || {
+          total_worked: (report as any).total_hours || 0,
+          total_should: (report as any).expected_hours || 0,
+          difference: (report as any).overtime_delta || 0,
+        }
+      };
+
+      setMonthReport(transformedReport);
     } catch (err: any) {
       console.error('Failed to load month report:', err);
       setError(err.message || 'Fehler beim Laden des Monatsberichts');
