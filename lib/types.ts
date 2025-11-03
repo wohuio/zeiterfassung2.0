@@ -121,29 +121,41 @@ export interface PaginatedResponse<T> {
 
 export interface WeekReportDay {
   date: string; // YYYY-MM-DD
-  total_hours: number;
-  expected_hours: number;
-  entries: TimeEntry[];
+  weekday: string; // e.g., "Monday", "Tuesday", etc.
+  worked_hours: number;
+  should_hours: number;
+  difference: number;
+  entries: Array<{
+    id: number;
+    start: number;
+    end: number;
+    is_break: boolean;
+    comment?: string | null;
+    duration_hours: number;
+  }>;
 }
 
 export interface WeekReport {
   week_start: string; // YYYY-MM-DD
   week_end: string; // YYYY-MM-DD
-  week_number: number;
-  total_hours: number;
-  expected_hours: number;
-  overtime_delta: number;
   days: WeekReportDay[];
+  summary: {
+    total_worked: number;
+    total_should: number;
+    difference: number;
+  };
 }
 
 export interface MonthReport {
   year: number;
   month: number;
   month_name: string;
-  total_hours: number;
-  expected_hours: number;
-  overtime_delta: number;
   days: WeekReportDay[];
+  summary: {
+    total_worked: number;
+    total_should: number;
+    difference: number;
+  };
 }
 
 export interface WorkingTimeCreateRequest {
@@ -172,6 +184,8 @@ export interface TimeEntriesQueryParams {
   end_date?: string; // YYYY-MM-DD
   page?: number;
   per_page?: number;
+  limit?: number;
+  offset?: number;
 }
 
 export interface AbsencesQueryParams {

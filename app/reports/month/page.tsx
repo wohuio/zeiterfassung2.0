@@ -261,21 +261,21 @@ export default function MonthReportPage() {
               {/* Main Stats with Large Circular Progress */}
               <div className="flex flex-col items-center justify-center mb-8">
                 <CircularProgress
-                  value={getProgressPercentage(monthReport.total_hours, monthReport.expected_hours)}
+                  value={getProgressPercentage(monthReport.summary.total_worked, monthReport.summary.total_should)}
                   size={280}
                   strokeWidth={16}
-                  color={monthReport.overtime_delta >= 0 ? 'green' : 'gradient'}
-                  label={formatHours(monthReport.total_hours)}
-                  sublabel={`von ${formatHours(monthReport.expected_hours)}`}
+                  color={monthReport.summary.difference >= 0 ? 'green' : 'gradient'}
+                  label={formatHours(monthReport.summary.total_worked)}
+                  sublabel={`von ${formatHours(monthReport.summary.total_should)}`}
                   showPercentage={true}
                 />
 
                 {/* Difference Below Circle */}
                 <div className={`text-2xl font-bold mt-6 ${
-                  monthReport.overtime_delta >= 0 ? 'text-green-400' : 'text-red-400'
+                  monthReport.summary.difference >= 0 ? 'text-green-400' : 'text-red-400'
                 }`}>
-                  {monthReport.overtime_delta >= 0 ? '+ ' : ''}
-                  {formatHours(Math.abs(monthReport.overtime_delta))} {monthReport.overtime_delta >= 0 ? 'Überstunden' : 'Fehlstunden'}
+                  {monthReport.summary.difference >= 0 ? '+ ' : ''}
+                  {formatHours(Math.abs(monthReport.summary.difference))} {monthReport.summary.difference >= 0 ? 'Überstunden' : 'Fehlstunden'}
                 </div>
               </div>
 
@@ -284,22 +284,22 @@ export default function MonthReportPage() {
                 <div className="text-center p-4 bg-bg-secondary/50 rounded-lg border border-border-primary">
                   <div className="text-xs text-text-tertiary mb-1">Gearbeitet</div>
                   <div className="text-2xl font-bold gradient-text">
-                    {monthReport.total_hours.toFixed(1)}h
+                    {monthReport.summary.total_worked.toFixed(1)}h
                   </div>
                 </div>
                 <div className="text-center p-4 bg-bg-secondary/50 rounded-lg border border-border-primary">
                   <div className="text-xs text-text-tertiary mb-1">Soll</div>
                   <div className="text-2xl font-bold text-text-secondary">
-                    {monthReport.expected_hours.toFixed(1)}h
+                    {monthReport.summary.total_should.toFixed(1)}h
                   </div>
                 </div>
                 <div className="text-center p-4 bg-bg-secondary/50 rounded-lg border border-border-primary">
                   <div className="text-xs text-text-tertiary mb-1">Differenz</div>
                   <div className={`text-2xl font-bold ${
-                    monthReport.overtime_delta >= 0 ? 'text-green-400' : 'text-red-400'
+                    monthReport.summary.difference >= 0 ? 'text-green-400' : 'text-red-400'
                   }`}>
-                    {monthReport.overtime_delta >= 0 ? '+' : ''}
-                    {monthReport.overtime_delta.toFixed(1)}h
+                    {monthReport.summary.difference >= 0 ? '+' : ''}
+                    {monthReport.summary.difference.toFixed(1)}h
                   </div>
                 </div>
               </div>
@@ -309,17 +309,17 @@ export default function MonthReportPage() {
                 <div className="flex justify-between text-sm mb-2">
                   <span className="text-text-tertiary">Fortschritt</span>
                   <span className="text-text-secondary">
-                    {getProgressPercentage(monthReport.total_hours, monthReport.expected_hours).toFixed(0)}%
+                    {getProgressPercentage(monthReport.summary.total_worked, monthReport.summary.total_should).toFixed(0)}%
                   </span>
                 </div>
                 <div className="w-full h-3 bg-bg-secondary rounded-full overflow-hidden">
                   <motion.div
                     className={`h-full ${
-                      monthReport.overtime_delta >= 0 ? 'bg-gradient-to-r from-green-400 to-green-600' : 'bg-gradient-to-r from-purple-400 to-blue-600'
+                      monthReport.summary.difference >= 0 ? 'bg-gradient-to-r from-green-400 to-green-600' : 'bg-gradient-to-r from-purple-400 to-blue-600'
                     }`}
                     initial={{ width: 0 }}
                     animate={{
-                      width: `${getProgressPercentage(monthReport.total_hours, monthReport.expected_hours)}%`
+                      width: `${getProgressPercentage(monthReport.summary.total_worked, monthReport.summary.total_should)}%`
                     }}
                     transition={{ duration: 1, ease: 'easeOut' }}
                   />

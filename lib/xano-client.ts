@@ -57,9 +57,9 @@ class XanoClient {
     options: RequestInit = {},
     apiGroup: 'auth' | 'main' | 'timeEntries' | 'reports' = 'main'
   ): Promise<T> {
-    const headers: HeadersInit = {
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      ...options.headers,
+      ...(options.headers as Record<string, string>),
     };
 
     if (this.authToken) {
