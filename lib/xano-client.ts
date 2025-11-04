@@ -21,6 +21,18 @@ import type {
   TimeEntriesQueryParams,
   AbsencesQueryParams,
   UsersQueryParams,
+  Organization,
+  Person,
+  Address,
+  OrganizationCreateRequest,
+  OrganizationUpdateRequest,
+  PersonCreateRequest,
+  PersonUpdateRequest,
+  AddressCreateRequest,
+  AddressUpdateRequest,
+  OrganizationsQueryParams,
+  PersonsQueryParams,
+  AddressesQueryParams,
 } from './types';
 
 const XANO_BASE_URL = process.env.NEXT_PUBLIC_XANO_BASE_URL;
@@ -28,6 +40,8 @@ const XANO_API_GROUP_AUTH = process.env.NEXT_PUBLIC_XANO_API_GROUP_AUTH || 'api:
 const XANO_API_GROUP_MAIN = process.env.NEXT_PUBLIC_XANO_API_GROUP_MAIN || 'api:uMXZ3Fde';
 const XANO_API_GROUP_TIME_ENTRIES = process.env.NEXT_PUBLIC_XANO_API_GROUP_TIME_ENTRIES || 'api:time_entries';
 const XANO_API_GROUP_REPORTS = process.env.NEXT_PUBLIC_XANO_API_GROUP_REPORTS || 'api:p3vCYW4E';
+const XANO_API_GROUP_CRM = process.env.NEXT_PUBLIC_XANO_API_GROUP_CRM || 'api:2dZRWuiU';
+const XANO_API_GROUP_ADMIN = process.env.NEXT_PUBLIC_XANO_API_GROUP_ADMIN || 'admin';
 
 if (!XANO_BASE_URL) {
   throw new Error('NEXT_PUBLIC_XANO_BASE_URL is not defined in environment variables');
@@ -38,6 +52,8 @@ class XanoClient {
   private mainBaseUrl: string;
   private timeEntriesBaseUrl: string;
   private reportsBaseUrl: string;
+  private crmBaseUrl: string;
+  private adminBaseUrl: string;
   private authToken: string | null = null;
 
   constructor() {
@@ -45,6 +61,8 @@ class XanoClient {
     this.mainBaseUrl = `${XANO_BASE_URL}/${XANO_API_GROUP_MAIN}`;
     this.timeEntriesBaseUrl = `${XANO_BASE_URL}/${XANO_API_GROUP_TIME_ENTRIES}`;
     this.reportsBaseUrl = `${XANO_BASE_URL}/${XANO_API_GROUP_REPORTS}`;
+    this.crmBaseUrl = `${XANO_BASE_URL}/${XANO_API_GROUP_CRM}`;
+    this.adminBaseUrl = `${XANO_BASE_URL}/${XANO_API_GROUP_ADMIN}`;
 
     // Load token from localStorage if available (client-side only)
     if (typeof window !== 'undefined') {
@@ -55,7 +73,7 @@ class XanoClient {
   private async request<T>(
     endpoint: string,
     options: RequestInit = {},
-    apiGroup: 'auth' | 'main' | 'timeEntries' | 'reports' = 'main'
+    apiGroup: 'auth' | 'main' | 'timeEntries' | 'reports' | 'crm' | 'admin' = 'main'
   ): Promise<T> {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -77,11 +95,20 @@ class XanoClient {
       case 'reports':
         baseUrl = this.reportsBaseUrl;
         break;
+      case 'crm':
+        baseUrl = this.crmBaseUrl;
+        break;
+      case 'admin':
+        baseUrl = this.adminBaseUrl;
+        break;
       default:
         baseUrl = this.mainBaseUrl;
     }
 
-    const response = await fetch(`${baseUrl}${endpoint}`, {
+    const url = `${baseUrl}${endpoint}`;
+    console.log('🔍 Xano Request:', { url, method: options.method || 'GET', apiGroup });
+
+    const response = await fetch(url, {
       ...options,
       headers,
     });
@@ -196,6 +223,14 @@ class XanoClient {
     );
   }
 
+  async getAllTimeEntries(p: number = 1, limit: number = 50): Promise<PaginatedResponse<TimeEntry>> {
+    return this.request<PaginatedResponse<TimeEntry>>(
+      `/time_entries?p=${p}&limit=${limit}`,
+      {},
+      'timeEntries'
+    );
+  }
+
   async getTimeEntry(id: number): Promise<TimeEntry> {
     return this.request<TimeEntry>(`/time-entries/${id}`);
   }
@@ -280,8 +315,14 @@ class XanoClient {
   async getUsers(params?: UsersQueryParams): Promise<PaginatedResponse<User>> {
     const queryString = params ? new URLSearchParams(params as any).toString() : '';
     return this.request<PaginatedResponse<User>>(
-      `/admin/users${queryString ? `?${queryString}` : ''}`
+      `/get_users_list${queryString ? `?${queryString}` : ''}`,
+      {},
+      'admin'
     );
+  }
+
+  async getUser(userId: number): Promise<User> {
+    return this.request<User>(`/get_user_id?id=${userId}`, {}, 'admin');
   }
 
   async getUserTimeEntries(
@@ -290,7 +331,9 @@ class XanoClient {
   ): Promise<PaginatedResponse<TimeEntry>> {
     const queryString = params ? new URLSearchParams(params as any).toString() : '';
     return this.request<PaginatedResponse<TimeEntry>>(
-      `/admin/users/${userId}/time-entries${queryString ? `?${queryString}` : ''}`
+      `/user_time_entries?user_id=${userId}${queryString ? `&${queryString}` : ''}`,
+      {},
+      'admin'
     );
   }
 
@@ -298,10 +341,124 @@ class XanoClient {
     userId: number,
     data: { role?: string; is_active?: boolean }
   ): Promise<User> {
-    return this.request<User>(`/admin/users/${userId}`, {
+    return this.request<User>(`/patch_user`, {
       method: 'PATCH',
+      body: JSON.stringify({ id: userId, ...data }),
+    }, 'admin');
+  }
+
+  // ============================================
+  // CRM - ORGANIZATIONS
+  // ============================================
+
+  async getOrganizations(params?: OrganizationsQueryParams): Promise<Organization[]> {
+    const queryString = params ? new URLSearchParams(params as any).toString() : '';
+    return this.request<Organization[]>(
+      `/list_organizations${queryString ? `?${queryString}` : ''}`,
+      {},
+      'crm'
+    );
+  }
+
+  async getOrganization(id: number): Promise<Organization> {
+    return this.request<Organization>(`/get_organization?id=${id}`, {}, 'crm');
+  }
+
+  async createOrganization(data: OrganizationCreateRequest): Promise<Organization> {
+    return this.request<Organization>('/create_organization', {
+      method: 'POST',
       body: JSON.stringify(data),
-    });
+    }, 'crm');
+  }
+
+  async updateOrganization(id: number, data: OrganizationUpdateRequest): Promise<Organization> {
+    return this.request<Organization>('/update_organization', {
+      method: 'PATCH',
+      body: JSON.stringify({ id, ...data }),
+    }, 'crm');
+  }
+
+  async deleteOrganization(id: number): Promise<{ success: boolean }> {
+    return this.request<{ success: boolean }>('/delete_organization', {
+      method: 'DELETE',
+      body: JSON.stringify({ id }),
+    }, 'crm');
+  }
+
+  // ============================================
+  // CRM - PERSONS
+  // ============================================
+
+  async getPersons(params?: PersonsQueryParams): Promise<Person[]> {
+    const queryString = params ? new URLSearchParams(params as any).toString() : '';
+    return this.request<Person[]>(
+      `/list_persons${queryString ? `?${queryString}` : ''}`,
+      {},
+      'crm'
+    );
+  }
+
+  async getPerson(id: number): Promise<Person> {
+    return this.request<Person>(`/get_person?id=${id}`, {}, 'crm');
+  }
+
+  async createPerson(data: PersonCreateRequest): Promise<Person> {
+    return this.request<Person>('/create_person', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }, 'crm');
+  }
+
+  async updatePerson(id: number, data: PersonUpdateRequest): Promise<Person> {
+    return this.request<Person>('/update_person', {
+      method: 'PATCH',
+      body: JSON.stringify({ id, ...data }),
+    }, 'crm');
+  }
+
+  async deletePerson(id: number): Promise<{ success: boolean }> {
+    return this.request<{ success: boolean }>('/delete_person', {
+      method: 'DELETE',
+      body: JSON.stringify({ id }),
+    }, 'crm');
+  }
+
+  // ============================================
+  // CRM - ADDRESSES
+  // ============================================
+
+  async getAddresses(params?: AddressesQueryParams): Promise<Address[]> {
+    const queryString = params ? new URLSearchParams(params as any).toString() : '';
+    return this.request<Address[]>(
+      `/list_addresses${queryString ? `?${queryString}` : ''}`,
+      {},
+      'crm'
+    );
+  }
+
+  async getAddress(id: number): Promise<Address> {
+    return this.request<Address>(`/get_address?id=${id}`, {}, 'crm');
+  }
+
+  async createAddress(data: AddressCreateRequest): Promise<Address> {
+    return this.request<Address>('/create_address', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }, 'crm');
+  }
+
+  async updateAddress(id: number, data: AddressUpdateRequest): Promise<Address> {
+    return this.request<Address>('/update_address', {
+      method: 'PATCH',
+      body: JSON.stringify({ id, ...data }),
+    }, 'crm');
+  }
+
+  async deleteAddress(id: number): Promise<{ success: boolean }> {
+    return this.request<{ success: boolean }>('/delete_address', {
+      method: 'DELETE',
+      body: JSON.stringify({ id }),
+    }, 'crm');
   }
 }
 

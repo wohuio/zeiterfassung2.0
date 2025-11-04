@@ -62,6 +62,25 @@ export default function WeekReportPage() {
     });
   };
 
+  const formatDateTime = (timestamp: number) => {
+    const date = new Date(timestamp);
+    return date.toLocaleString('de-DE', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const isSameDay = (timestamp1: number, timestamp2: number) => {
+    const date1 = new Date(timestamp1);
+    const date2 = new Date(timestamp2);
+    return date1.getDate() === date2.getDate() &&
+           date1.getMonth() === date2.getMonth() &&
+           date1.getFullYear() === date2.getFullYear();
+  };
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString + 'T00:00:00');
     return date.toLocaleDateString('de-DE', {
@@ -346,7 +365,17 @@ export default function WeekReportPage() {
                                   )}
                                 </div>
                                 <div className="text-xs text-text-tertiary">
-                                  {formatTime(entry.start)} - {formatTime(entry.end)}
+                                  {isSameDay(entry.start, entry.end) ? (
+                                    // Same day: show only times
+                                    <>{formatTime(entry.start)} - {formatTime(entry.end)}</>
+                                  ) : (
+                                    // Multi-day: show date and time
+                                    <>
+                                      {formatDateTime(entry.start)}
+                                      {' - '}
+                                      {formatDateTime(entry.end)}
+                                    </>
+                                  )}
                                 </div>
                               </div>
                               <div className="text-right">

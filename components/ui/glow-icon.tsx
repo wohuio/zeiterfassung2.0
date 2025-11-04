@@ -1,11 +1,16 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Clock, FileText, Calendar, BarChart3, Users, Settings, TrendingUp, Zap } from 'lucide-react';
+import {
+  Clock, FileText, Calendar, BarChart3, Users, Settings, TrendingUp, Zap,
+  AlertCircle, ArrowLeft, User, Shield, XCircle, CheckCircle, Briefcase, ArrowRight
+} from 'lucide-react';
 
 interface GlowIconProps {
-  icon: 'clock' | 'file' | 'calendar' | 'chart' | 'users' | 'settings' | 'trending' | 'zap';
-  size?: number;
+  icon: 'clock' | 'file' | 'calendar' | 'chart' | 'users' | 'settings' | 'trending' | 'zap' |
+        'alert-circle' | 'arrow-left' | 'user' | 'shield' | 'x-circle' | 'check-circle' |
+        'briefcase' | 'arrow-right';
+  size?: number | 'sm' | 'md' | 'lg';
   color?: 'purple' | 'blue' | 'pink' | 'gradient';
   variant?: 'static' | 'pulse' | 'float' | 'spin';
   className?: string;
@@ -27,7 +32,23 @@ export function GlowIcon({
     settings: Settings,
     trending: TrendingUp,
     zap: Zap,
+    'alert-circle': AlertCircle,
+    'arrow-left': ArrowLeft,
+    user: User,
+    shield: Shield,
+    'x-circle': XCircle,
+    'check-circle': CheckCircle,
+    briefcase: Briefcase,
+    'arrow-right': ArrowRight,
   };
+
+  const sizeMap = {
+    sm: 16,
+    md: 24,
+    lg: 32,
+  };
+
+  const iconSize = typeof size === 'string' ? sizeMap[size] : size;
 
   const Icon = icons[icon];
 
@@ -78,7 +99,7 @@ export function GlowIcon({
       {...(variants[variant] || {})}
     >
       <Icon
-        size={size}
+        size={iconSize}
         className={colorClasses[color]}
         strokeWidth={2.5}
       />

@@ -202,3 +202,177 @@ export interface UsersQueryParams {
   page?: number;
   per_page?: number;
 }
+
+// ============================================
+// CRM TYPES
+// ============================================
+
+export interface Organization {
+  id: number;
+  organization_number: string;
+  name: string;
+  legal_form?: string | null;
+  payment_terms: number;
+  discount_percentage: number;
+  credit_limit?: number | null;
+  industry?: string | null;
+  customer_type?: string | null;
+  status: string;
+  vat_id?: string | null;
+  tax_number?: string | null;
+  website?: string | null;
+  notes?: string | null;
+  created_by?: number | null;
+  created_at: number;
+  updated_at: number;
+}
+
+export interface Person {
+  id: number;
+  organization_id?: number | null;
+  salutation?: string | null;
+  title?: string | null;
+  first_name: string;
+  last_name: string;
+  email?: string | null;
+  phone?: string | null;
+  mobile?: string | null;
+  position?: string | null;
+  department?: string | null;
+  is_primary_contact: boolean;
+  is_billing_contact: boolean;
+  is_active: boolean;
+  birthday?: string | null; // YYYY-MM-DD
+  notes?: string | null;
+  created_at: number;
+  updated_at: number;
+}
+
+export interface Address {
+  id: number;
+  addressable_type: 'organization' | 'person';
+  addressable_id: number;
+  address_type: 'billing' | 'shipping' | 'other';
+  street: string;
+  street2?: string | null;
+  postal_code: string;
+  city: string;
+  state?: string | null;
+  country: string;
+  is_primary: boolean;
+  is_active: boolean;
+  created_at: number;
+  updated_at: number;
+}
+
+// CRM Request Types
+
+export interface OrganizationCreateRequest {
+  organization_number: string;
+  name: string;
+  legal_form?: string;
+  payment_terms?: number;
+  discount_percentage?: number;
+  credit_limit?: number;
+  industry?: string;
+  customer_type?: string;
+  status?: string;
+  vat_id?: string;
+  tax_number?: string;
+  website?: string;
+  notes?: string;
+}
+
+export interface OrganizationUpdateRequest {
+  organization_number?: string;
+  name?: string;
+  legal_form?: string;
+  payment_terms?: number;
+  discount_percentage?: number;
+  credit_limit?: number;
+  industry?: string;
+  customer_type?: string;
+  status?: string;
+  vat_id?: string;
+  tax_number?: string;
+  website?: string;
+  notes?: string;
+}
+
+export interface PersonCreateRequest {
+  organization_id?: number;
+  salutation?: string;
+  title?: string;
+  first_name: string;
+  last_name: string;
+  email?: string;
+  phone?: string;
+  mobile?: string;
+  position?: string;
+  department?: string;
+  is_primary_contact?: boolean;
+  is_billing_contact?: boolean;
+  is_active?: boolean;
+  birthday?: string;
+  notes?: string;
+}
+
+export interface PersonUpdateRequest {
+  organization_id?: number;
+  salutation?: string;
+  title?: string;
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+  phone?: string;
+  mobile?: string;
+  position?: string;
+  department?: string;
+  is_primary_contact?: boolean;
+  is_billing_contact?: boolean;
+  is_active?: boolean;
+  birthday?: string;
+  notes?: string;
+}
+
+export interface AddressCreateRequest {
+  addressable_type: 'organization' | 'person';
+  addressable_id: number;
+  address_type?: 'billing' | 'shipping' | 'other';
+  street: string;
+  street2?: string;
+  postal_code: string;
+  city: string;
+  state?: string;
+  country?: string;
+  is_primary?: boolean;
+  is_active?: boolean;
+}
+
+export interface AddressUpdateRequest {
+  addressable_type?: 'organization' | 'person';
+  addressable_id?: number;
+  address_type?: 'billing' | 'shipping' | 'other';
+  street?: string;
+  street2?: string;
+  postal_code?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  is_primary?: boolean;
+  is_active?: boolean;
+}
+
+// CRM Query Parameters
+
+export interface OrganizationsQueryParams {
+  status?: string;
+}
+
+export interface PersonsQueryParams {
+  organization_id?: number;
+}
+
+export interface AddressesQueryParams {
+  addressable_type?: 'organization' | 'person';
+}

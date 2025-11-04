@@ -212,12 +212,39 @@ Value: api:p3vCYW4E
 
 Klicke **"Add"**
 
+#### Variable 5: API_GROUP_TIME_ENTRIES
+
+```
+Key:   NEXT_PUBLIC_XANO_API_GROUP_TIME_ENTRIES
+Value: api:time_entries
+```
+
+Klicke **"Add"**
+
+#### Variable 6: API_GROUP_CRM
+
+```
+Key:   NEXT_PUBLIC_XANO_API_GROUP_CRM
+Value: api:2dZRWuiU
+```
+
+Klicke **"Add"**
+
+#### Variable 7: API_GROUP_ADMIN
+
+```
+Key:   NEXT_PUBLIC_XANO_API_GROUP_ADMIN
+Value: api:xaFAyPfv
+```
+
+Klicke **"Add"**
+
 **Wichtig:**
 - ✅ Exakte Schreibweise beachten
 - ✅ Keine Leerzeichen vor/nach den Werten
-- ✅ Alle 4 Variablen müssen hinzugefügt sein
+- ✅ Alle 7 Variablen müssen hinzugefügt sein
 
-Du solltest jetzt **4 Environment Variables** sehen.
+Du solltest jetzt **7 Environment Variables** sehen.
 
 ### 3.5 Deployment starten
 
@@ -457,11 +484,14 @@ git push
 
 **Lösung:**
 1. Vercel Dashboard → Projekt → Settings → Environment Variables
-2. Prüfe alle 4 Variablen:
+2. Prüfe alle 7 Variablen:
    - `NEXT_PUBLIC_XANO_BASE_URL`
    - `NEXT_PUBLIC_XANO_API_GROUP_AUTH`
    - `NEXT_PUBLIC_XANO_API_GROUP_MAIN`
    - `NEXT_PUBLIC_XANO_API_GROUP_REPORTS`
+   - `NEXT_PUBLIC_XANO_API_GROUP_TIME_ENTRIES`
+   - `NEXT_PUBLIC_XANO_API_GROUP_CRM`
+   - `NEXT_PUBLIC_XANO_API_GROUP_ADMIN`
 3. Keine Leerzeichen, exakte Schreibweise!
 4. Nach Änderung: Deployments → ⋮ → "Redeploy"
 
