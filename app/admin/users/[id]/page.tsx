@@ -243,7 +243,9 @@ function UserDetailPageContent() {
                 <h3 className="text-h3 font-semibold text-blue-400">Überstunden</h3>
               </div>
               <p className="text-h2 font-bold">
-                {user.overtime_balance ? formatDuration(user.overtime_balance) : '0h 0m'}
+                {user.overtime_account?.current_balance
+                  ? `${user.overtime_account.current_balance.toFixed(1)}h`
+                  : '0.0h'}
               </p>
             </Card>
           </motion.div>
@@ -310,13 +312,13 @@ function UserDetailPageContent() {
                     className="flex items-center justify-between p-4 rounded-lg bg-card/50 border border-border/50 hover:border-primary/30 transition-colors"
                   >
                     <div className="flex-1">
-                      <p className="text-body font-medium">{entry.description || 'Keine Beschreibung'}</p>
+                      <p className="text-body font-medium">{entry.comment || 'Keine Beschreibung'}</p>
                       <p className="text-body-sm text-muted-foreground">
                         {formatDateTime(entry.start)} - {formatTime(entry.end)}
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-body font-bold">{formatDuration(entry.duration)}</p>
+                      <p className="text-body font-bold">{formatDuration(entry.end - entry.start)}</p>
                     </div>
                   </div>
                 ))}

@@ -142,7 +142,15 @@ export default function TimeEntriesPage() {
 
   // SWR fetcher function
   const fetcher = useCallback(async ([key, page]: [string, number]) => {
-    if (!user) return { items: [], itemsTotal: 0 };
+    if (!user) return {
+      items: [],
+      itemsReceived: 0,
+      curPage: 1,
+      nextPage: null,
+      prevPage: null,
+      offset: 0,
+      perPage: ITEMS_PER_PAGE
+    };
 
     if (isAdminOrOffice) {
       return await xanoClient.getAllTimeEntries(page, ITEMS_PER_PAGE);
@@ -166,7 +174,7 @@ export default function TimeEntriesPage() {
   );
 
   const entries = data?.items || [];
-  const totalItems = data?.itemsTotal || 0;
+  const totalItems = data?.itemsReceived || 0;
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
 
   const handleLoadMore = useCallback(() => {
