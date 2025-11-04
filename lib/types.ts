@@ -177,6 +177,14 @@ export interface AbsenceCreateRequest {
   comment?: string;
 }
 
+export interface AbsenceUpdateRequest {
+  start_date?: string;
+  end_date?: string;
+  type?: 'vacation' | 'sick' | 'other';
+  status?: 'pending' | 'approved' | 'rejected';
+  comment?: string;
+}
+
 // Query Parameter Types
 
 export interface TimeEntriesQueryParams {

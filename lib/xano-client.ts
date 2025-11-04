@@ -18,6 +18,7 @@ import type {
   MonthReport,
   WorkingTimeCreateRequest,
   AbsenceCreateRequest,
+  AbsenceUpdateRequest,
   TimeEntriesQueryParams,
   AbsencesQueryParams,
   UsersQueryParams,
@@ -306,6 +307,19 @@ class XanoClient {
     return this.request<{ items: Absence[] }>(
       `/absences${queryString ? `?${queryString}` : ''}`
     );
+  }
+
+  async updateAbsence(id: number, data: AbsenceUpdateRequest): Promise<Absence> {
+    return this.request<Absence>(`/absences/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteAbsence(id: number): Promise<void> {
+    return this.request<void>(`/absences/${id}`, {
+      method: 'DELETE',
+    });
   }
 
   // ============================================

@@ -10,7 +10,7 @@ import { GridBackground } from '@/components/ui/grid-background';
 
 interface DashboardLayoutProps {
   children: ReactNode;
-  activeTab?: 'dashboard' | 'time-entries' | 'reports' | 'admin';
+  activeTab?: 'dashboard' | 'time-entries' | 'absences' | 'reports' | 'admin';
 }
 
 export function DashboardLayout({ children, activeTab }: DashboardLayoutProps) {
@@ -104,6 +104,21 @@ export function DashboardLayout({ children, activeTab }: DashboardLayoutProps) {
                 <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-novu-500 via-blue-500 to-pink-500 rounded-t-full" />
               )}
               {activeTab !== 'time-entries' && (
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-novu-500 to-blue-500 rounded-t-full transition-all duration-300 group-hover:w-full" />
+              )}
+            </Link>
+
+            <Link
+              href="/absences"
+              className={`py-4 px-3 relative group block ${
+                activeTab === 'absences' ? 'gradient-text font-semibold' : 'text-text-secondary'
+              }`}
+            >
+              <span className="group-hover:text-novu-400 transition-colors text-body">Abwesenheiten</span>
+              {activeTab === 'absences' && (
+                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-novu-500 via-blue-500 to-pink-500 rounded-t-full" />
+              )}
+              {activeTab !== 'absences' && (
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-novu-500 to-blue-500 rounded-t-full transition-all duration-300 group-hover:w-full" />
               )}
             </Link>
