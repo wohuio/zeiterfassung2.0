@@ -30,7 +30,7 @@ function UserDetailPageContent() {
       setError(null);
 
       // Load users list and find our user
-      const usersData = await xanoClient.getUsers({ page: '1', per_page: '100' });
+      const usersData = await xanoClient.getUsers({ page: 1, per_page: 100 });
       const foundUser = usersData.items.find(u => u.id === userId);
 
       if (!foundUser) {
