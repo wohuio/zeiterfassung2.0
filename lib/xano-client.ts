@@ -43,6 +43,7 @@ const XANO_API_GROUP_TIME_ENTRIES = process.env.NEXT_PUBLIC_XANO_API_GROUP_TIME_
 const XANO_API_GROUP_REPORTS = process.env.NEXT_PUBLIC_XANO_API_GROUP_REPORTS || 'api:p3vCYW4E';
 const XANO_API_GROUP_CRM = process.env.NEXT_PUBLIC_XANO_API_GROUP_CRM || 'api:2dZRWuiU';
 const XANO_API_GROUP_ADMIN = process.env.NEXT_PUBLIC_XANO_API_GROUP_ADMIN || 'admin';
+const XANO_API_GROUP_ABSENCES = process.env.NEXT_PUBLIC_XANO_API_GROUP_ABSENCES || 'api:Y4Tu20lh';
 
 if (!XANO_BASE_URL) {
   throw new Error('NEXT_PUBLIC_XANO_BASE_URL is not defined in environment variables');
@@ -55,6 +56,7 @@ class XanoClient {
   private reportsBaseUrl: string;
   private crmBaseUrl: string;
   private adminBaseUrl: string;
+  private absencesBaseUrl: string;
   private authToken: string | null = null;
 
   constructor() {
@@ -64,6 +66,7 @@ class XanoClient {
     this.reportsBaseUrl = `${XANO_BASE_URL}/${XANO_API_GROUP_REPORTS}`;
     this.crmBaseUrl = `${XANO_BASE_URL}/${XANO_API_GROUP_CRM}`;
     this.adminBaseUrl = `${XANO_BASE_URL}/${XANO_API_GROUP_ADMIN}`;
+    this.absencesBaseUrl = `${XANO_BASE_URL}/${XANO_API_GROUP_ABSENCES}`;
 
     // Load token from localStorage if available (client-side only)
     if (typeof window !== 'undefined') {
@@ -74,7 +77,7 @@ class XanoClient {
   private async request<T>(
     endpoint: string,
     options: RequestInit = {},
-    apiGroup: 'auth' | 'main' | 'timeEntries' | 'reports' | 'crm' | 'admin' = 'main'
+    apiGroup: 'auth' | 'main' | 'timeEntries' | 'reports' | 'crm' | 'admin' | 'absences' = 'main'
   ): Promise<T> {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -101,6 +104,9 @@ class XanoClient {
         break;
       case 'admin':
         baseUrl = this.adminBaseUrl;
+        break;
+      case 'absences':
+        baseUrl = this.absencesBaseUrl;
         break;
       default:
         baseUrl = this.mainBaseUrl;
@@ -296,16 +302,18 @@ class XanoClient {
   // ============================================
 
   async createAbsence(data: AbsenceCreateRequest): Promise<Absence> {
-    return this.request<Absence>('/absences', {
+    return this.request<Absence>('/post_absences', {
       method: 'POST',
       body: JSON.stringify(data),
-    });
+    }, 'absences');
   }
 
   async getAbsences(params?: AbsencesQueryParams): Promise<{ items: Absence[] }> {
     const queryString = params ? new URLSearchParams(params as any).toString() : '';
     return this.request<{ items: Absence[] }>(
-      `/absences${queryString ? `?${queryString}` : ''}`
+      `/get_absences${queryString ? `?${queryString}` : ''}`,
+      {},
+      'absences'
     );
   }
 
@@ -313,13 +321,13 @@ class XanoClient {
     return this.request<Absence>(`/absences/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(data),
-    });
+    }, 'absences');
   }
 
   async deleteAbsence(id: number): Promise<void> {
-    return this.request<void>(`/absences/${id}`, {
+    return this.request<void>(`/delet_absences/${id}`, {
       method: 'DELETE',
-    });
+    }, 'absences');
   }
 
   // ============================================
