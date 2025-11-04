@@ -42,8 +42,8 @@ function UserDetailPageContent() {
       // Load recent time entries
       try {
         const entriesData = await xanoClient.getUserTimeEntries(userId, {
-          page: '1',
-          per_page: '10'
+          page: 1,
+          per_page: 10
         });
         setTimeEntries(entriesData.items || []);
       } catch (err) {
