@@ -53,7 +53,7 @@ export default function AdminReportsPage() {
         >
           <ParticleBackground />
           <div className="relative z-10 text-center py-16">
-            <GlowIcon icon="report" size={80} variant="pulse" color="gradient" />
+            <GlowIcon icon="chart" size={80} variant="pulse" color="gradient" />
             <h2 className="text-title-2 gradient-text mt-6 mb-4">
               In Entwicklung
             </h2>
